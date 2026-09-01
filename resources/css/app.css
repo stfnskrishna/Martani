@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+    /* Alpine hides elements marked x-cloak, but only once it has finished
+       initializing — before that they render like any other element. This
+       rule hides them from the very first paint instead, so things like the
+       "copied to clipboard" checkmark (sukses.blade.php) don't flash
+       visible for a split second while Alpine's script is still loading. */
+    [x-cloak] {
+        display: none !important;
+    }
+
     /* Always reserve space for the vertical scrollbar so centered (mx-auto)
        content doesn't shift left/right between short pages (no scrollbar)
        and tall pages (scrollbar present) — e.g. Produk/Keranjang/Lacak vs
