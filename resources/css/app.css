@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Always reserve space for the vertical scrollbar so centered (mx-auto)
+       content doesn't shift left/right between short pages (no scrollbar)
+       and tall pages (scrollbar present) — e.g. Produk/Keranjang/Lacak vs
+       Beranda/Kontak/Tentang Kami. */
+    html {
+        scrollbar-gutter: stable;
+    }
+
+    /* Brand type: Arimo (Regular for body, Bold for h1/h2) — a plain,
+       Arial/Helvetica-metrically-compatible grotesque. One family, two
+       weights, deliberately unremarkable: the brand's real personality is
+       the red/yellow/navy color blocking and packaging photography, not
+       the typeface. Loaded via a Google Fonts <link> in each layout's
+       <head>.
+
+       !important on the heading weight because most h1/h2 elements carry
+       Tailwind's `font-bold` class directly in their markup, which has
+       higher CSS specificity than a plain `h1, h2 { font-weight }` rule.
+       It's redundant almost everywhere in practice, but kept for
+       reliability on any heading that doesn't carry font-bold. */
+    body {
+        font-family: 'Arimo', Arial, Helvetica, sans-serif;
+    }
+
+    h1, h2 {
+        font-weight: 700 !important;
+    }
+
+    /* Custom scrollbar: thin navy thumb, fully invisible track, no up/down
+       arrow buttons. The thumb itself is also invisible at rest and only
+       painted in while the page is actively being scrolled (see the
+       `is-scrolling` toggle in app.js — Windows/Linux browsers don't
+       auto-hide scrollbars the way macOS does, so we fake it with a class
+       + a short idle timeout). Firefox uses the standard scrollbar-*
+       properties; Chrome/Safari/older Edge need the
+       ::-webkit-scrollbar-* pseudo-elements. */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+        transition: scrollbar-color 0.3s ease;
+    }
+
+    html.is-scrolling,
+    html.is-scrolling * {
+        scrollbar-color: #002F7A transparent;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 0;
+        border: 2px solid transparent;
+        transition: background-color 0.3s ease;
+    }
+
+    html.is-scrolling ::-webkit-scrollbar-thumb {
+        background-color: #002F7A;
+        border: 2px solid #FFFFFF;
+    }
+
+    ::-webkit-scrollbar-button {
+        display: none;
+    }
+}
