@@ -24,11 +24,18 @@ return new class extends Migration
 
         // 2. Backfill the snapshot for existing rows from whatever product
         //    is still linked (rows whose product was already deleted, or
-        //    already backfilled, stay untouched).
-        DB::table('detail_transaksis')
-            ->join('produks', 'produks.id', '=', 'detail_transaksis.produk_id')
-            ->whereNull('detail_transaksis.nama_produk')
-            ->update(['detail_transaksis.nama_produk' => DB::raw('produks.nama_produk')]);
+        //    already backfilled, stay untouched). Written as a correlated
+        //    subquery rather than Query Builder's join()->update() — the
+        //    latter compiles to a join-based UPDATE that MySQL supports but
+        //    SQLite does not, causing "no such column: produks.nama_produk"
+        //    on SQLite. A scalar subquery works identically on both.
+        DB::statement('
+            UPDATE detail_transaksis
+            SET nama_produk = (
+                SELECT produks.nama_produk FROM produks WHERE produks.id = detail_transaksis.produk_id
+            )
+            WHERE nama_produk IS NULL
+        ');
 
         // 3. Stop deleting a product from cascading away order history: drop the
         //    cascade delete FK and let produk_id go NULL instead. The snapshot
