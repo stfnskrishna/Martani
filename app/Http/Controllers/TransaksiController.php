@@ -98,7 +98,8 @@ class TransaksiController extends Controller
                     'from' => config('mail.from.name') . ' <' . config('mail.from.address') . '>',
                     'to' => [config('services.resend.notify')],
                     'subject' => 'Pesanan Baru - Martani',
-                    'text' => "Pesanan baru masuk!\n\nKode: $kode\nNama: {$request->nama_pelanggan}\nTotal: Rp " . number_format($total, 0, ',', '.'),
+                    'text' => "Pesanan baru masuk!\n\nKode: $kode\nNama: {$request->nama_pelanggan}\nTotal: Rp " . number_format($total, 0, ',', '.') .
+                    "\nCatatan untuk Penjual: " . ($request->catatan ?: '-'),
                 ])->throw();
         } catch (\Throwable $e) {
             // Don't stop checkout if email fails, but log it so we can
