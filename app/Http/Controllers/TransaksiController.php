@@ -7,7 +7,8 @@ use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -89,14 +90,21 @@ class TransaksiController extends Controller
         // Clear cart
         Keranjang::where('session_id', session()->getId())->delete();
 
-        // Send email
+        // Send email via Resend's HTTP API directly — confirmed working
+        // via /test-resend before wiring it in here.
         try {
-            Mail::raw("Pesanan baru masuk!\n\nKode: $kode\nNama: {$request->nama_pelanggan}\nTotal: Rp " . number_format($total, 0, ',', '.'), function($message) {
-                $message->to(config('mail.from.address'))
-                        ->subject('Pesanan Baru - Martani');
-            });
-        } catch (\Exception $e) {
-            // Silent fail - don't stop checkout if email fails
+            Http::withToken(config('services.resend.key'))
+                ->post('https://api.resend.com/emails', [
+                    'from' => config('mail.from.name') . ' <' . config('mail.from.address') . '>',
+                    'to' => [config('mail.from.address')],
+                    'subject' => 'Pesanan Baru - Martani',
+                    'text' => "Pesanan baru masuk!\n\nKode: $kode\nNama: {$request->nama_pelanggan}\nTotal: Rp " . number_format($total, 0, ',', '.'),
+                ])->throw();
+        } catch (\Throwable $e) {
+            // Don't stop checkout if email fails, but log it so we can
+            // actually see why. \Throwable (not \Exception) so a missing
+            // class or config issue logs instead of crashing the page.
+            Log::error('Gagal mengirim email pesanan baru: ' . $e->getMessage());
         }
 
         return redirect()->route('checkout.sukses', $kode);
