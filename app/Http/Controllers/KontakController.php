@@ -20,7 +20,7 @@ class KontakController extends Controller
             Http::withToken(config('services.resend.key'))
                 ->post('https://api.resend.com/emails', [
                     'from' => config('mail.from.name') . ' <' . config('mail.from.address') . '>',
-                    'to' => [config('mail.from.address')],
+                    'to' => [config('services.resend.notify')],
                     'subject' => 'Pesan Baru dari ' . $request->nama . ' - Martani',
                     'text' => "Pesan baru dari website Martani!\n\n" .
                         "Nama: {$request->nama}\n" .

@@ -20,6 +20,7 @@ return [
 
     'resend' => [
         'key' => env('RESEND_API_KEY'),
+        'notify' => env('ADMIN_NOTIFY_EMAIL'),
     ],
 
     'ses' => [

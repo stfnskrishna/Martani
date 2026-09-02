@@ -96,7 +96,7 @@ class TransaksiController extends Controller
             Http::withToken(config('services.resend.key'))
                 ->post('https://api.resend.com/emails', [
                     'from' => config('mail.from.name') . ' <' . config('mail.from.address') . '>',
-                    'to' => [config('mail.from.address')],
+                    'to' => [config('services.resend.notify')],
                     'subject' => 'Pesanan Baru - Martani',
                     'text' => "Pesanan baru masuk!\n\nKode: $kode\nNama: {$request->nama_pelanggan}\nTotal: Rp " . number_format($total, 0, ',', '.'),
                 ])->throw();
