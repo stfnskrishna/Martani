@@ -25,18 +25,6 @@ Route::get('/kontak', function () {
 Route::post('/kontak/kirim', [KontakController::class, 'kirim'])->name('kontak.kirim');
 Route::post('/keranjang/tambah-ajax', [KeranjangController::class, 'tambahAjax'])->name('keranjang.tambahAjax');
 
-//TEMPORARY — Resend integration test. Delete this route once /test-resend
-// confirms a real email arrives; it has no business staying in production.
-Route::get('/test-resend', function () {
-    $response = \Illuminate\Support\Facades\Http::withToken(config('services.resend.key'))
-        ->post('https://api.resend.com/emails', [
-            'from' => config('mail.from.name') . ' <' . config('mail.from.address') . '>',
-            'to' => [config('mail.from.address')],
-            'subject' => 'Resend test',
-            'text' => 'If you got this, Resend works.',
-        ]);
-    return response()->json(['status' => $response->status(), 'body' => $response->json()]);
-});
 
 // Keranjang routes
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
